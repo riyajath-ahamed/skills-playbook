@@ -1,0 +1,9 @@
+version: 1
+
+defaults:
+  enabled: false
+  environment: development
+  approval_required_for_writes: true
+  deny_production_by_default: true
+
+  
