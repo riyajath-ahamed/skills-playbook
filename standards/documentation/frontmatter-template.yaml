@@ -1,0 +1,20 @@
+
+---
+# Required for every reference document
+title: "<Concise, descriptive title>"
+description: "< >"  # add 
+type: "<model | integration | api | architecture | concept | runbook>"
+domain: "<architecture | agentic-systems | platform-engineering | application-engineering | security>"
+status: "<draft | active | deprecated>"
+version: "<version>"
+---
+
+# Optional metadata
+owner: "<Team or role responsible for accuracy>"
+tags:
+  - "<searchable-term>"
+related:
+  - "<relative/path/to/related-document.md>"
+applies_to:
+  - "<System, service, or component>"
+last_verified: "YYYY-MM-DD"
