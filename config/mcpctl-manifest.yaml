@@ -1,0 +1,40 @@
+servers:
+  - id: github-mcp
+    port: 8101
+    directory: mcp-servers/github
+    entry: server.py
+    required_env:
+      - GITHUB_PERSONAL_ACCESS_TOKEN
+  - id: jira-mcp
+    port: 8102
+    directory: mcp-servers/jira
+    entry: server.py
+    required_env:
+      - JIRA_BASE_URL
+      - JIRA_EMAIL
+      - JIRA_API_TOKEN
+    optional_env:
+      - JIRA_WRITE_ENABLED
+  - id: confluence-mcp
+    port: 8103
+    directory: mcp-servers/confluence
+    entry: server.py
+    required_env:
+      - CONFLUENCE_BASE_URL
+      - CONFLUENCE_EMAIL
+      - CONFLUENCE_API_TOKEN
+  - id: figma-mcp
+    port: 8106
+    directory: mcp-servers/figma
+    entry: server.py
+    required_env:
+      - FIGMA_ACCESS_TOKEN
+  - id: sonar-mcp
+    port: 8108
+    directory: mcp-servers/sonar
+    entry: server.py
+    required_env: []
+    optional_env:
+      - SONARQUBE_TOKEN
+      - SONARQUBE_URL
+      - SONARQUBE_ORG
