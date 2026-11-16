@@ -1,20 +1,23 @@
+# Reference-page frontmatter. Copy the keys you need into the document.
+# Required keys: title, type, domain, status.
+# Optional keys may be omitted. Validators must not require optional keys.
 
----
-# Required for every reference document
-title: "<Concise, descriptive title>"
-description: "< >"  # add 
-type: "<model | integration | api | architecture | concept | runbook>"
-domain: "<architecture | agentic-systems | platform-engineering | application-engineering | security>"
-status: "<draft | active | deprecated>"
-version: "<version>"
----
+title: "<Concise descriptive title>"
+description: "<One sentence stating what the document establishes>"
+type: "<model | integration | api | architecture | concept | runbook | standard | principle | pattern | adr | research | glossary>"
+domain: "<architecture | agentic-systems | platform-engineering | application-engineering | software-engineering | documentation | research | learning | security>"
+status: "<draft | active | deprecated | superseded>"
 
-# Optional metadata
-owner: "<Team or role responsible for accuracy>"
+# Optional
+id: "<stable-id.kept-when-the-file-moves>"
+version: "<document version>"
+owner: "<role responsible for accuracy>"
 tags:
   - "<searchable-term>"
 related:
   - "<relative/path/to/related-document.md>"
 applies_to:
-  - "<System, service, or component>"
+  - "<system or component>"
 last_verified: "YYYY-MM-DD"
+supersedes: "<relative/path/to/older-document.md>"
+superseded_by: "<relative/path/to/newer-document.md>"

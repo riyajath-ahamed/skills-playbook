@@ -51,3 +51,16 @@ applies_to:
 - ADRs contain architectural decisions and their rationale.
 - Planning specifications in `spec/` contain planning context and source provenance.
 - Git history records changes over time.
+
+## Templates
+
+- [Frontmatter fields](frontmatter-template.yaml)
+- [Reference page](../../templates/reference-page.md)
+- [ADR](../../templates/adr.md)
+- [RFC](../../templates/rfc.md)
+- [System design](../../templates/system-design.md)
+- [Technical evaluation](../../templates/technical-evaluation.md)
+- [Threat model](../../templates/threat-model.md)
+- [Incident report](../../templates/incident-report.md)
+- [Runbook](../../templates/runbook.md)
+- [Learning note](../../templates/learning-note.md)
