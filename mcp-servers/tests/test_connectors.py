@@ -91,14 +91,14 @@ class ToolTests(unittest.TestCase):
             raise AssertionError("create was sent")
 
         preview = plan_issue_batch(
-            [{"project": "ETI", "summary": "Add", "issue_type": "Task"}],
+            [{"project": "ABC", "summary": "Add", "issue_type": "Task"}],
             confirmed=False,
             enabled=True,
             sender=sender,
         )
         self.assertFalse(preview["sent"])
         preview = plan_issue_batch(
-            [{"project": "ETI", "summary": "Add"}],
+            [{"project": "ABC", "summary": "Add"}],
             confirmed=True,
             enabled=False,
             sender=sender,
@@ -113,7 +113,7 @@ class ToolTests(unittest.TestCase):
             return 201, {"issues": []}
 
         result = plan_issue_batch(
-            [{"project": "ETI", "summary": "Add", "issue_type": "Task", "description": "note"}],
+            [{"project": "ABC", "summary": "Add", "issue_type": "Task", "description": "note"}],
             confirmed=True,
             enabled=True,
             sender=sender,
@@ -130,7 +130,7 @@ class ToolTests(unittest.TestCase):
             return httpx.Response(
                 200,
                 json={
-                    "key": "ETI-1",
+                    "key": "ABC-1",
                     "fields": {
                         "summary": "Read",
                         "status": {"name": "Open"},
@@ -146,7 +146,7 @@ class ToolTests(unittest.TestCase):
 
         tools.configure(client(handler))
         with mock.patch.dict("os.environ", {"JIRA_BASE_URL": "https://example.atlassian.net"}):
-            result = get_issue_details("ETI-1")
+            result = get_issue_details("ABC-1")
         self.assertEqual(result["google_workspace_refs"], ["https://docs.google.com/document/d/abc"])
         self.assertEqual(result["lucid_refs"], ["https://lucid.app/diagram/1"])
         tools._api = None
@@ -174,13 +174,13 @@ class ToolTests(unittest.TestCase):
         def handler(request: httpx.Request) -> httpx.Response:
             if request.url.path.endswith("/remotelink"):
                 return httpx.Response(200, json=[])
-            return httpx.Response(200, json={"key": "ETI-2", "fields": {"summary": "s", "status": {"name": "Open"}, "description": description}})
+            return httpx.Response(200, json={"key": "ABC-2", "fields": {"summary": "s", "status": {"name": "Open"}, "description": description}})
 
         from jira import tools
 
         tools.configure(client(handler))
         with mock.patch.dict("os.environ", {"JIRA_BASE_URL": "https://example.atlassian.net"}):
-            result = get_issue_details("ETI-2")
+            result = get_issue_details("ABC-2")
         tools._api = None
         self.assertEqual(result["lucid_refs"], ["https://lucid.app/lucidchart/abc/edit"])
         self.assertEqual(result["google_workspace_refs"], ["https://docs.google.com/document/d/xyz"])
