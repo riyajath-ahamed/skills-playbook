@@ -1,0 +1,23 @@
+id: read-only
+name: Read-only research
+description: Development and test reads. No writes and no production access.
+production_access: deny
+fail_closed: true
+allow:
+  development:
+    - read
+  test:
+    - read
+deny:
+  - write
+  - delete
+  - deploy
+  - shell
+  - credential_admin
+approval_required:
+  - write
+  - delete
+  - deploy
+  - shell
+  - credential_admin
+  - production

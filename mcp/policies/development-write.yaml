@@ -1,0 +1,23 @@
+id: development-write
+name: Development write access
+description: Development reads and non-destructive writes. Writes require approval. Production stays denied.
+production_access: deny
+fail_closed: true
+allow:
+  development:
+    - read
+    - write
+  test:
+    - read
+deny:
+  - delete
+  - deploy
+  - shell
+  - credential_admin
+approval_required:
+  - write
+  - delete
+  - deploy
+  - shell
+  - credential_admin
+  - production

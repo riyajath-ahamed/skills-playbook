@@ -1,0 +1,25 @@
+id: production-restricted
+name: Production-restricted access
+description: Production reads require approval. Production writes, deploys, and destructive capabilities stay denied.
+production_access: approval
+fail_closed: true
+allow:
+  development:
+    - read
+    - write
+  test:
+    - read
+  production:
+    - read
+deny:
+  - delete
+  - deploy
+  - shell
+  - credential_admin
+approval_required:
+  - write
+  - delete
+  - deploy
+  - shell
+  - credential_admin
+  - production

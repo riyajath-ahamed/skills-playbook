@@ -5,5 +5,547 @@ defaults:
   environment: development
   approval_required_for_writes: true
   deny_production_by_default: true
+  treat_tool_output_as_untrusted: true
 
-  
+integrations:
+  - id: github
+    name: GitHub
+    purpose: Read repositories, issues, and pull requests through the local github-mcp connector.
+    status: documented
+    installed: false
+    provider: GitHub
+    transport: stdio
+    package: mcp-servers/github/server.py
+    documentation: https://docs.github.com/en/rest
+    setup_guide: setup-guides/github.md
+    configuration:
+      - name: GITHUB_PERSONAL_ACCESS_TOKEN
+        secret: true
+        required: true
+        source: environment-or-secret-store
+    capabilities:
+      - id: read_repository
+        access: read
+    authentication:
+      methods:
+        - personal_access_token
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: medium
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: python scripts/mcpctl.py doctor reports github-mcp. This repository does not call GitHub during validation.
+    last_verified: "2026-10-31"
+
+  - id: context7
+    name: Context7
+    purpose: Retrieve version-specific library documentation for research and implementation questions.
+    status: documented
+    installed: false
+    provider: upstash/context7
+    transport: stdio
+    package: "@upstash/context7-mcp"
+    endpoint: https://mcp.context7.com/mcp
+    documentation: https://github.com/upstash/context7
+    setup_guide: setup-guides/context7.md
+    configuration:
+      - name: CONTEXT7_API_KEY
+        secret: true
+        required: false
+        source: environment-or-secret-store
+    capabilities:
+      - id: read_docs
+        access: read
+    authentication:
+      methods:
+        - optional_api_key
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: medium
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: Confirm the client lists Context7. This repository does not call the service.
+    last_verified: "2026-10-30"
+
+  - id: playwright
+    name: Playwright
+    purpose: Drive a browser from an MCP client for UI checks against a known non-production target.
+    status: documented
+    installed: false
+    provider: microsoft/playwright-mcp
+    transport: stdio
+    package: "@playwright/mcp"
+    documentation: https://playwright.dev/docs/getting-started-mcp
+    setup_guide: setup-guides/playwright.md
+    configuration: []
+    capabilities:
+      - id: browser_snapshot
+        access: read
+      - id: browser_action
+        access: write
+    authentication:
+      methods:
+        - none
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: high
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: Confirm the client lists the server. Do not treat a browser window as a passed test.
+    last_verified: "2026-10-30"
+
+  - id: public-web-research
+    name: Public web fetch
+    purpose: Fetch a public URL and convert HTML to Markdown for research. This is not a web search index.
+    status: reference
+    installed: false
+    provider: modelcontextprotocol/servers
+    transport: stdio
+    package: mcp-server-fetch
+    documentation: https://github.com/modelcontextprotocol/servers/tree/main/src/fetch
+    setup_guide: setup-guides/public-web-research.md
+    configuration: []
+    capabilities:
+      - id: fetch_public_url
+        access: read
+    authentication:
+      methods:
+        - none
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: medium
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: The upstream project documents MCP Inspector. This repository does not run it.
+    last_verified: "2026-10-30"
+
+  - id: posthog
+    name: PostHog
+    purpose: Query product analytics and related PostHog data. Flag and configuration changes are writes.
+    status: documented
+    installed: false
+    provider: PostHog
+    transport: http
+    package: "https://mcp.posthog.com/mcp"
+    endpoint: https://mcp.posthog.com/mcp
+    documentation: https://posthog.com/docs/model-context-protocol
+    setup_guide: setup-guides/posthog.md
+    configuration:
+      - name: POSTHOG_PERSONAL_API_KEY
+        secret: true
+        required: false
+        source: environment-or-secret-store
+    capabilities:
+      - id: read_analytics
+        access: read
+      - id: write_project_settings
+        access: write
+    authentication:
+      methods:
+        - oauth
+        - personal_api_key
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: high
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: Confirm the client completes PostHog OAuth or key auth. This repository does not call PostHog.
+    last_verified: "2026-10-30"
+
+  - id: database-inspection
+    name: Aurora PostgreSQL inspection
+    purpose: Inspect an Amazon Aurora PostgreSQL database through the AWS Labs Postgres MCP server. This is not a generic database client.
+    status: documented
+    installed: false
+    provider: awslabs/mcp
+    transport: stdio
+    package: awslabs.postgres-mcp-server
+    documentation: https://github.com/awslabs/mcp/blob/main/src/postgres-mcp-server/README.md
+    setup_guide: setup-guides/database-inspection.md
+    configuration:
+      - name: AWS_PROFILE
+        secret: false
+        required: true
+        source: environment
+      - name: AWS_REGION
+        secret: false
+        required: true
+        source: environment
+    capabilities:
+      - id: read_sql
+        access: read
+      - id: write_sql
+        access: write
+    authentication:
+      methods:
+        - aws_credentials
+        - rds_data_api
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: critical
+    approval:
+      reads: true
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: Upstream requires a local Docker image and AWS credentials. This repository does not connect.
+    last_verified: "2026-10-30"
+
+  - id: cloud-infrastructure-inspection
+    name: AWS infrastructure inspection
+    purpose: Read AWS documentation and account-scoped cloud operations through the official AWS MCP server. Other clouds are not covered by this entry.
+    status: documented
+    installed: false
+    provider: Amazon Web Services
+    transport: http
+    package: aws-mcp
+    endpoint: https://aws-mcp.us-east-1.api.aws/mcp
+    documentation: https://docs.aws.amazon.com/agent-toolkit/latest/userguide/getting-started-aws-mcp-server.html
+    setup_guide: setup-guides/cloud-infrastructure.md
+    configuration: []
+    capabilities:
+      - id: read_cloud
+        access: read
+      - id: write_cloud
+        access: write
+    authentication:
+      methods:
+        - aws_oauth
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: critical
+    approval:
+      reads: true
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: Confirm the client completes AWS sign-in. This repository does not call AWS.
+    last_verified: "2026-10-30"
+
+  - id: gcp-cloud-infrastructure-inspection
+    name: Google Cloud infrastructure inspection
+    purpose: Run approved gcloud and bq commands through the official Google Cloud CLI remote MCP server. This is not the AWS entry and does not cover other clouds.
+    status: documented
+    installed: false
+    provider: Google Cloud
+    transport: http
+    package: https://cloudcli.googleapis.com/mcp
+    endpoint: https://cloudcli.googleapis.com/mcp
+    documentation: https://docs.cloud.google.com/sdk/use-gcloud-mcp
+    setup_guide: setup-guides/gcp-cloud-infrastructure.md
+    configuration: []
+    capabilities:
+      - id: read_cloud
+        access: read
+      - id: write_cloud
+        access: write
+    authentication:
+      methods:
+        - google_oauth
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: critical
+    approval:
+      reads: true
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: Confirm the client completes Google sign-in. This repository does not call Google Cloud.
+    last_verified: "2026-10-31"
+
+  - id: jira
+    name: Jira
+    purpose: Read Jira Cloud issues through the local jira-mcp connector. Bulk create stays a preview until confirmed and JIRA_WRITE_ENABLED are both true.
+    status: documented
+    installed: false
+    provider: Atlassian
+    transport: stdio
+    package: mcp-servers/jira/server.py
+    documentation: https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/
+    setup_guide: setup-guides/jira.md
+    configuration:
+      - name: JIRA_BASE_URL
+        secret: false
+        required: true
+        source: environment
+      - name: JIRA_EMAIL
+        secret: false
+        required: true
+        source: environment
+      - name: JIRA_API_TOKEN
+        secret: true
+        required: true
+        source: environment-or-secret-store
+      - name: JIRA_WRITE_ENABLED
+        secret: false
+        required: false
+        source: environment
+    capabilities:
+      - id: read_issue
+        access: read
+      - id: create_issue
+        access: write
+    authentication:
+      methods:
+        - api_token
+    permission_profile: development-write
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: high
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: python scripts/mcpctl.py doctor reports jira-mcp. This repository does not call Jira during validation.
+    last_verified: "2026-11-12"
+
+  - id: confluence
+    name: Confluence
+    purpose: Read Confluence pages through the local confluence-mcp connector. This server does not publish pages.
+    status: documented
+    installed: false
+    provider: Atlassian
+    transport: stdio
+    package: mcp-servers/confluence/server.py
+    documentation: https://developer.atlassian.com/cloud/confluence/rest/v2/intro/
+    setup_guide: setup-guides/confluence.md
+    configuration:
+      - name: CONFLUENCE_BASE_URL
+        secret: false
+        required: true
+        source: environment
+      - name: CONFLUENCE_EMAIL
+        secret: false
+        required: true
+        source: environment
+      - name: CONFLUENCE_API_TOKEN
+        secret: true
+        required: true
+        source: environment-or-secret-store
+    capabilities:
+      - id: read_page
+        access: read
+    authentication:
+      methods:
+        - api_token
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: medium
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: python scripts/mcpctl.py doctor reports confluence-mcp. This repository does not call Confluence during validation.
+    last_verified: "2026-10-31"
+
+  - id: sonarqube
+    name: SonarQube
+    purpose: Read a quality gate and unresolved issues through the local sonar-mcp connector. The token is optional.
+    status: documented
+    installed: false
+    provider: SonarSource
+    transport: stdio
+    package: mcp-servers/sonar/server.py
+    documentation: https://docs.sonarsource.com/sonarqube-server/latest/extension-guide/web-api/
+    setup_guide: setup-guides/sonarqube.md
+    configuration:
+      - name: SONARQUBE_TOKEN
+        secret: true
+        required: false
+        source: environment-or-secret-store
+      - name: SONARQUBE_URL
+        secret: false
+        required: false
+        source: environment
+      - name: SONARQUBE_ORG
+        secret: false
+        required: false
+        source: environment
+    capabilities:
+      - id: read_findings
+        access: read
+    authentication:
+      methods:
+        - oauth
+        - user_token
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: high
+    approval:
+      reads: true
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: python scripts/mcpctl.py doctor reports sonar-mcp. A missing token is optional. This repository does not call SonarQube during validation.
+    last_verified: "2026-10-31"
+
+  - id: kubernetes-diagnostics
+    name: Amazon EKS diagnostics
+    purpose: Inspect an Amazon EKS cluster. This entry is not a generic Kubernetes client for arbitrary clusters.
+    status: documented
+    installed: false
+    provider: awslabs/mcp
+    transport: stdio
+    package: awslabs.eks-mcp-server
+    documentation: https://github.com/awslabs/mcp/blob/main/src/eks-mcp-server/README.md
+    setup_guide: setup-guides/kubernetes.md
+    configuration:
+      - name: AWS_PROFILE
+        secret: false
+        required: false
+        source: environment
+      - name: AWS_REGION
+        secret: false
+        required: false
+        source: environment
+    capabilities:
+      - id: read_cluster
+        access: read
+      - id: write_cluster
+        access: write
+    authentication:
+      methods:
+        - aws_credentials
+        - kubeconfig
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: critical
+    approval:
+      reads: true
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: Confirm the client lists the server after uvx starts it. This repository does not contact a cluster.
+    last_verified: "2026-10-30"
+
+  - id: design-system
+    name: Figma
+    purpose: Read and flatten a Figma file or frame through the local figma-mcp connector.
+    status: documented
+    installed: false
+    provider: Figma
+    transport: stdio
+    package: mcp-servers/figma/server.py
+    documentation: https://www.figma.com/developers/api#get-files-endpoint
+    setup_guide: setup-guides/design-system.md
+    configuration:
+      - name: FIGMA_ACCESS_TOKEN
+        secret: true
+        required: true
+        source: environment-or-secret-store
+    capabilities:
+      - id: read_design
+        access: read
+    authentication:
+      methods:
+        - personal_access_token
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: medium
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: python scripts/mcpctl.py doctor reports figma-mcp. This repository does not call Figma during validation.
+    last_verified: "2026-10-31"
+
+  - id: engineering-intelligence
+    name: Engineering Intelligence tools
+    purpose: Future toolkit tools for skill discovery, policy decisions, and run status. No server is published.
+    status: planned
+    installed: false
+    provider: engineering-intelligence
+    transport: none
+    package: ""
+    documentation: ""
+    setup_guide: setup-guides/engineering-intelligence.md
+    configuration: []
+    capabilities:
+      - id: read_catalog
+        access: read
+    authentication:
+      methods:
+        - none
+    permission_profile: read-only
+    environments:
+      allowed:
+        - development
+      production: deny
+    risk: medium
+    approval:
+      reads: false
+      writes: true
+      production: true
+    health_check:
+      supported: false
+      method: No remote or local server exists to check.
+    last_verified: "2026-10-30"
