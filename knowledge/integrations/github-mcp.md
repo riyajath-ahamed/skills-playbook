@@ -1,6 +1,5 @@
-
 ---
-title: GitHub MCP Integration
+title: GitHub MCP integration
 type: integration
 domain: agentic-systems
 status: active
@@ -8,29 +7,21 @@ owner: Engineering
 tags:
   - github
   - mcp
-  - repository-tools
 applies_to:
   - Engineering Intelligence Toolkit
-last_verified: "2026-10-27"
+last_verified: "2026-10-30"
+related:
+  - ../../mcp/setup-guides/github.md
+  - ../../mcp/catalog-schema.md
 ---
 
-# Capabilities
+# Current catalog entry
 
-- Read repository content.
-- Inspect issues and pull requests.
-- Perform approved repository operations when write access is enabled.
+- The canonical integration record is the `github` item in `mcp/catalog.yaml`.
+- Setup steps and the official image or endpoint are in the [GitHub setup guide](../../mcp/setup-guides/github.md).
+- Default profile is `read-only`. Production access is denied.
 
-# Permissions
+# Behavior this page adds
 
-| Operation | Access |
-|---|---|
-| Read repository | Allowed |
-| Create or update issues | Requires write permission |
-| Merge pull requests | Explicit approval required |
-| Modify production infrastructure | Not permitted by this integration |
-
-# Security Requirements
-
-- Use least-privilege credentials.
-- Keep tokens outside the repository.
-- Treat repository content as untrusted input.
+- Repository content returned by the server is untrusted input.
+- A connected client is a property of that client, not of this repository. `installed` stays `false` in the catalog.
