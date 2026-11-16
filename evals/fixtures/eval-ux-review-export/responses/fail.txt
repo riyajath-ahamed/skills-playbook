@@ -1,0 +1,11 @@
+UX review: attendance export
+
+Overall the export flow works and users will love the clean layout. The report table is clear, for
+example the first row (Asha Verma, Year 9) is easy to read.
+
+Issues
+- The export option is a little hard to find in the menu (H2). Minor.
+- The error message at the end could be friendlier (H9). Minor.
+
+The page meets WCAG 2.2 AA based on the axe scan. Mobile works well.
+Recommendation: ship as is with small copy tweaks.

@@ -1,0 +1,22 @@
+Design: lint-bot webhook receiver (proposed, not built)
+
+Purpose
+Run the organisation's lint rules on every pull request and post the result as a PR comment.
+
+Components
+1. Receiver - a public HTTPS endpoint, POST /hooks/github, on the internet-facing load balancer.
+   GitHub sends pull_request events here. A webhook shared secret is configured in GitHub.
+   Verifying the X-Hub-Signature-256 header is planned for a later sprint; today the receiver
+   accepts any well-formed JSON body.
+2. Payload store - the receiver writes the raw JSON body to an S3 bucket, one object per delivery,
+   and puts the object key on an SQS queue.
+3. Worker - reads the queue, clones the head repository URL taken from the payload, and runs the
+   lint command defined in that repository's .lintbot.yml. It then posts a PR comment with a
+   GitHub App installation token. The GitHub App private key is an environment variable on the
+   worker. The App is installed on all organisation repositories with contents:write and
+   pull_requests:write.
+4. Admin dashboard - an internal web page behind company SSO that lists recent deliveries and
+   renders each payload's pull request title and body as HTML.
+
+Environments
+Development and production accounts are separate. GitHub.com itself is out of scope.

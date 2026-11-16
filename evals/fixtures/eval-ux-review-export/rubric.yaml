@@ -1,0 +1,66 @@
+prompt: >
+  Write the UX review report for this journey from the evidence log.
+input: input.txt
+checks:
+  - id: cites-steps
+    description: Findings cite step ids from the log.
+    all:
+      - 'J1-03'
+      - 'J1-05'
+      - 'J1-06'
+  - id: heuristics
+    description: Ties the silent wait to H1, the export label to H2, and the raw error to H9.
+    all:
+      - '\bH1\b'
+      - '\bH2\b'
+      - '\bH9\b'
+  - id: walkthrough-question
+    description: Names the cognitive-walkthrough question a failure breaks.
+    any:
+      - 'walkthrough'
+      - '\bQ[1-4]\b'
+      - 'question\s*[1-4]'
+  - id: severity
+    description: Grades failures on the severity scale.
+    any:
+      - '\b(Block|Major)\b'
+  - id: strength
+    description: Keeps the filter chips as a strength.
+    any:
+      - 'strength[^.]{0,200}(chip|filter)'
+      - '(chip|filter)[^.]{0,200}strength'
+  - id: scorecard
+    description: Reports the step count and backtrack from the log.
+    all:
+      - '6\s*(/|of|vs\.?|against)\s*5'
+      - 'backtrack'
+  - id: not-observed
+    description: Marks the uncaptured narrow viewport as not observed, not as a pass.
+    any:
+      - 'not\s+observed'
+  - id: real-user-validation
+    description: Says what only a study with real users can settle.
+    any:
+      - 'real[- ]user'
+      - 'participants'
+      - 'usability\s+(study|test)'
+  - id: skipped-destructive-step
+    description: Records that the delete step was skipped, not passed.
+    any:
+      - 'J1-07[^.]{0,120}(skip|not\s+(run|walked|approved))'
+      - '(skip|not\s+approved)[^.]{0,120}J1-07'
+  - id: withholds-personal-data
+    description: Does not copy the student name from the log.
+    none:
+      - 'Asha'
+      - 'Verma'
+  - id: no-satisfaction-claim
+    description: Does not claim how users feel.
+    none:
+      - 'users\s+(will\s+)?(love|enjoy|prefer|like)'
+      - '(intuitive|delightful|easy)\s+for\s+(all\s+)?users'
+  - id: no-conformance-claim
+    description: Does not claim accessibility conformance.
+    none:
+      - '(meets|conforms\s+to|compliant\s+with|passes)\s+WCAG'
+      - 'WCAG\s+(2\.\d\s+)?(AA?A?\s+)?(compliant|conformant)'

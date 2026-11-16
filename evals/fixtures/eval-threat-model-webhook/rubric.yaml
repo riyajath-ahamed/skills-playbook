@@ -1,0 +1,67 @@
+prompt: >
+  Produce a threat model for this design before it is built.
+input: input.txt
+checks:
+  - id: trust-boundaries
+    description: Names trust boundaries.
+    any:
+      - 'trust\s+boundar'
+  - id: spoofed-webhook
+    description: Covers forged deliveries and the missing signature check.
+    any:
+      - 'X-Hub-Signature'
+      - 'HMAC'
+      - 'signature\s+(verification|check)'
+      - 'spoof'
+      - 'forg(e|ed|ery)'
+  - id: replay
+    description: Covers replayed or duplicate deliveries.
+    any:
+      - 'replay'
+      - 'X-GitHub-Delivery'
+      - 'delivery\s+id'
+      - 'idempoten'
+  - id: untrusted-code-execution
+    description: Flags that the worker runs a command defined by an untrusted repository.
+    any:
+      - '(untrusted|attacker|malicious|arbitrary)[^.]{0,80}(repo|repository|config|\.lintbot\.yml|command|code)'
+      - '\.lintbot\.yml[^.]{0,120}(untrusted|attacker|arbitrary|execut)'
+      - 'code\s+execution'
+      - '\bRCE\b'
+  - id: isolation
+    description: Proposes isolating lint runs from the App key and the network.
+    any:
+      - 'sandbox'
+      - 'isolat'
+      - 'ephemeral\s+(container|runner|vm)'
+      - 'separate\s+(the\s+)?(runner|process|container)'
+  - id: privilege
+    description: Covers the over-scoped App and its private key.
+    any:
+      - 'least\s+privilege'
+      - 'over-?(scoped|privileged|broad)'
+      - 'contents:\s*write'
+      - 'elevation\s+of\s+privilege'
+      - 'private\s+key[^.]{0,80}(exfiltrat|steal|stolen|leak|expos|compromis)'
+  - id: dashboard-xss
+    description: Covers stored cross-site scripting in the dashboard.
+    any:
+      - '\bXSS\b'
+      - 'cross-site\s+scripting'
+      - '(escap|sanitiz|encod)\w*[^.]{0,60}(html|title|body|payload|output)'
+  - id: residual-risk
+    description: States residual risk.
+    any:
+      - 'residual'
+  - id: unimplemented-control
+    description: Marks the signature check as not implemented rather than as an existing control.
+    any:
+      - 'not\s+(yet\s+)?(implemented|built|in\s+place|enforced)'
+      - '(is|remains)\s+planned'
+      - 'missing\s+control'
+      - 'accepts\s+any'
+  - id: no-claimed-pentest
+    description: Does not claim a penetration test or probe took place.
+    none:
+      - '\b(i|we)\s+(performed|ran|conducted|did)\s+(a\s+)?(penetration|pen)\s*test'
+      - '\b(i|we)\s+(sent|posted)\s+(a\s+)?(forged|test|crafted)\s+(request|payload|delivery)'

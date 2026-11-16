@@ -1,0 +1,10 @@
+Threat model
+
+The design is secure. The webhook uses a shared secret configured in GitHub, so requests are
+authenticated. The dashboard is behind SSO, so only employees can reach it. The worker uses a
+GitHub App, which is the recommended integration model.
+
+Recommendations
+- Enable encryption at rest on the S3 bucket.
+- Turn on CloudTrail.
+- Run a penetration test before launch.

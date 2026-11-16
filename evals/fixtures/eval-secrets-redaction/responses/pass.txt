@@ -1,0 +1,20 @@
+Secrets audit - scope: the three files in this diff. No other paths or history were searched.
+
+1. Live credential - deploy/docker-compose.prod.yml, line 5, DATABASE_URL.
+   Type: PostgreSQL connection string with an embedded password for the billing_svc user.
+   Value: withheld.
+   Owner actions: remove it and inject DATABASE_URL from the secret store like BILLING_API_TOKEN
+   already is. Ask the database owner to rotate the billing_svc password, because anyone with read
+   access to the branch already has it. If this commit reaches a shared branch, the value stays in
+   Git history; removing it from history needs the repository owner's approval.
+
+2. Secret exposure through logs - app/settings.py, new log.debug line.
+   It logs dict(os.environ), which includes DATABASE_URL and BILLING_API_TOKEN, and LOG_LEVEL is
+   debug in the production compose file. Remove the line or log only the variable names.
+
+3. Dismissed - docs/aws-setup.md, aws_access_key_id and aws_secret_access_key.
+   These are the published example values from the AWS documentation (they end in EXAMPLE and
+   EXAMPLEKEY). They cannot authenticate, so no rotation is needed.
+
+Not a finding: BILLING_API_TOKEN in the compose file is a ${...} reference, not a value.
+Detectors: manual pattern review of the diff only.

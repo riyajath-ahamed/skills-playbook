@@ -1,0 +1,25 @@
+Decision notes: where `ei` stores run records
+
+Repository state
+- The latest ADR is ADR-0006 (run lifecycle). Its states are pending, planning, awaiting_approval,
+  running, verifying, succeeded, failed, and cancelled. The state machine and its tests exist in
+  platform/internal/runs, but runs live only in memory and are lost when the process exits.
+- spec/architecture/next-capability.md names "persist run records" as the next capability and
+  says PostgreSQL and pgvector wait until a shared multi-user store or a measured retrieval gap
+  exists.
+- `ei` is a single-user command-line tool. There is no daemon.
+
+Options discussed
+1. One JSON file per run under a directory in the user's home, written atomically
+   (write to a temp file, then rename).
+2. An embedded SQLite database file. Adds a cgo or pure-Go driver dependency.
+3. PostgreSQL. Needs a running server.
+
+Where the discussion ended
+- The tech lead prefers option 1: no new dependency, easy to inspect, and the run count is small.
+- Two `ei` processes writing the same run at once has not been solved; option 1 would need a
+  lock file or would have to refuse concurrent writers.
+- The architecture review has not happened yet.
+- Nothing has been implemented.
+
+Task context: write the ADR for this choice so the review can consider it.

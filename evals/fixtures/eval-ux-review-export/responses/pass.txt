@@ -1,0 +1,38 @@
+UX review: attendance CSV export
+
+Scope: agent-driven capture on staging, 1280x800 only, journey J1 (first-time administrator).
+This is an expert review, not a study with participants.
+
+Journey scorecard
+| Journey | Completed | Steps (taken / ideal) | Backtracks | Errors | Dead ends |
+| J1 | Partial | 6 / 5 | 1 | 1 visible error, 1 wrong-path click | 0 |
+Completed is Partial: a CSV downloaded, but only after an error and a duplicate request.
+
+Strengths
+S1 (Strength): applied filters stay visible as removable chips (H6). Step J1-02, evidence J1-02.png.
+The administrator can see and undo the date range without remembering it.
+
+Failures
+F1 - Major - H2 Match with the real world, walkthrough question 3 (associate action with effect).
+Step J1-03 and J1-04, evidence J1-03a.png, J1-04.png. There is no Export action. The export lives
+under "Archive", and "Process" sits next to it and starts a recalculation. A first-time administrator
+picked the wrong item. Fix hint: add an Export button next to the table.
+
+F2 - Major - H1 Visibility of system status, walkthrough question 4 (see progress).
+Step J1-05, evidence J1-05a.png. After Run, nothing changed for 41 seconds, so Run was pressed twice
+and POST /api/exports was sent twice. Fix hint: disable Run and show progress while the export builds.
+
+F3 - Major - H9 Recognize, diagnose, and recover from errors.
+Step J1-06, evidence J1-06.png. The banner shows only "ERR_EXPORT_413" with no cause or next step.
+Fix hint: say the export was too large or duplicated, and what to do.
+
+Heuristic matrix: H1 Weak, H2 Weak, H6 Strong, H9 Weak. H3, H4, H5, H7, H8, H10 Not observed.
+Lenses: narrow viewport Not observed, because the 320px capture expired before it ran.
+
+Skipped: J1-07 (delete saved view) was skipped because the destructive step was not approved.
+Personal data: J1-02.png shows student names and is flagged for redaction. Names are not repeated here.
+
+Accessibility: the accessibility-review findings are not attached yet. No conformance is claimed.
+
+Needs real-user validation: whether administrators expect exports under Reports at all, and whether
+the chips help or distract over repeated use, need a study with real users.

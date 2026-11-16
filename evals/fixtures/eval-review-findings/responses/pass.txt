@@ -1,0 +1,18 @@
+Findings, highest impact first.
+
+1. Critical - billing/refunds.py, issue_refund: the provider error is swallowed.
+   `except Exception: pass` discards every failure, including a 4xx rejection, and the function
+   still returns True. refund_order then marks the order as refunded even though the provider
+   never issued the refund. Customers are told they were refunded and finance reconciliation
+   breaks. Let the error propagate, or retry only on 502/503 with a bound and then raise.
+
+2. High - billing/refunds.py, issue_refund: the new log.info call logs the full headers dict.
+   The headers carry the Authorization bearer token, so every refund writes a credential to the
+   application logs. Log the order id and amount only. The token added to tests/test_refunds.py
+   should be replaced with an obvious placeholder; I have not repeated its value here.
+
+3. Medium - tests/test_refunds.py: only the success path is tested. Add a test where the mock
+   transport returns a 502 and assert that the order is not marked refunded.
+
+Tests: the author reports that pytest tests/test_refunds.py passed. I did not run the tests, and
+the existing test would not catch finding 1.

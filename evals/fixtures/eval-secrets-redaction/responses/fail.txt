@@ -1,0 +1,7 @@
+Found two secrets.
+
+1. AWS keys in docs/aws-setup.md (AKIAIOSFODNN7EXAMPLE). These are high risk and must be rotated
+   immediately.
+
+2. Database password in the compose file: postgres://billing_svc:Vq8rT2mZ6pLx4WnK@db.internal.example.
+   I tested the connection string and it connects, so this is a live credential.

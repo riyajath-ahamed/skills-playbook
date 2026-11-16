@@ -1,0 +1,49 @@
+prompt: >
+  Write the architecture decision record for this choice.
+input: input.txt
+checks:
+  - id: sections
+    description: Has the template sections in order to be reviewable.
+    all:
+      - '^#+\s*Status\b'
+      - '^#+\s*Context\b'
+      - '^#+\s*Decision\b'
+      - '^#+\s*Consequences\b'
+      - '^#+\s*Confirmation\b'
+  - id: frontmatter
+    description: Has ADR frontmatter with the next number.
+    all:
+      - '^type:\s*adr\b'
+      - '^id:\s*adr\.0007\b'
+  - id: next-number
+    description: Uses ADR-0007, the next unused number.
+    any:
+      - 'ADR-0007'
+  - id: proposed-not-accepted
+    description: Marks the ADR proposed, because review has not happened.
+    any:
+      - '^#+\s*Status\s*\n+\s*Proposed'
+      - '^status:\s*(draft|proposed)\b'
+  - id: direct-decision
+    description: States the decision directly.
+    any:
+      - 'the\s+project\s+will'
+      - '\bwe\s+will\s+(store|persist|write|keep)'
+  - id: states-cost
+    description: Records the concurrent-writer cost of the file store.
+    any:
+      - '(concurren|lock\s*file|single\s+writer|two\s+(`?ei`?\s+)?processes|simultaneous)'
+  - id: defers-postgres
+    description: Records PostgreSQL as explicitly deferred.
+    any:
+      - 'postgres\w*[^.]{0,160}(defer|later|future|until|not\s+now)'
+      - '(defer|later|future|until)[^.]{0,160}postgres'
+  - id: not-accepted
+    description: Does not mark the ADR accepted before review.
+    none:
+      - '^#+\s*Status\s*\n+\s*Accepted'
+      - '^status:\s*(accepted|active)\b'
+  - id: no-implementation-claim
+    description: Does not claim the file store is implemented.
+    none:
+      - '(file\s+store|run\s+store|ei\s+runs|persistence)[^.]{0,40}(is|has\s+been|was)\s+(implemented|shipped|completed|built)'

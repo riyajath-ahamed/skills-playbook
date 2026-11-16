@@ -1,0 +1,27 @@
+Threat model: lint-bot webhook receiver (proposed design)
+
+Scope
+- In scope: receiver, S3 payload store, SQS queue, worker, admin dashboard, the GitHub App key.
+- Out of scope: GitHub.com, company SSO, the AWS account baseline.
+
+Trust boundaries
+- B1 Internet to receiver (POST /hooks/github).
+- B2 Untrusted repository content to worker (clone and .lintbot.yml).
+- B3 Worker to GitHub API with the App installation token.
+- B4 Stored payload to admin dashboard browser.
+
+Threats
+| ID | Threat | Boundary | Impact | Mitigation | Residual risk |
+|---|---|---|---|---|---|
+| T1 | Spoofing: anyone can forge a delivery because X-Hub-Signature-256 is not verified. The control is planned, not implemented. | B1 | Fake events drive the worker, comment spam, queue flooding | Verify the HMAC signature before storing; reject on mismatch | Low once verification ships; high until then |
+| T2 | Replay of a captured, validly signed delivery | B1 | Duplicate lint runs and comments | Record X-GitHub-Delivery ids and drop duplicates (idempotent processing) | Low |
+| T3 | Elevation of privilege: .lintbot.yml in an untrusted fork defines the lint command, so a malicious repository gets code execution on the worker | B2 | Theft of the App private key from the environment, then contents:write on every org repository | Run lint in an ephemeral sandbox container with no network and no secrets; keep the key in a separate process that only posts comments | Medium: sandbox escape |
+| T4 | Over-scoped App: contents:write is not needed to post comments | B3 | A stolen token can push code org-wide | Least privilege: pull_requests:write only; install per repository | Low |
+| T5 | Stored XSS: PR title and body rendered as HTML in the dashboard | B4 | Script runs in an SSO-authenticated admin session | Escape output; render as text; add a Content-Security-Policy | Low |
+| T6 | Denial of service by large or numerous payloads | B1 | Storage and queue cost, delayed lint | Body size limit, rate limit, S3 lifecycle rule | Low |
+
+Assumptions
+- GitHub delivers webhooks only over TLS and the shared secret is stored in a secret manager.
+- If the worker must post to repositories outside the org, T4 changes.
+
+This model is a design review. No penetration test or live probe was performed.

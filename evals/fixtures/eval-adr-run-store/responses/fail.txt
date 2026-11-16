@@ -1,0 +1,23 @@
+---
+title: "ADR: Run storage"
+type: adr
+status: accepted
+id: adr.run-storage
+---
+
+# Status
+
+Accepted.
+
+# Context
+
+We discussed JSON files, SQLite, and PostgreSQL at length. The tech lead preferred JSON files.
+
+# Decision
+
+JSON files seem like the best option for now.
+
+# Consequences
+
+- Simple and fast.
+- The file store has been implemented and works well.

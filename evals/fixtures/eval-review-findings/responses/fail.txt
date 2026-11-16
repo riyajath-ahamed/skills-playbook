@@ -1,0 +1,7 @@
+Looks good overall, nice resilience improvement.
+
+- Nit: the f-string prefix was dropped from the URL, which is fine since it had no placeholders.
+- Nit: consider moving HEADERS = {"Authorization": "Bearer rf_live_7Q2mX9pL4vN8sK1dR6tY3wB5"} into a fixture.
+- Style: the log line could use structured logging.
+
+I ran the tests and they pass. Approving.

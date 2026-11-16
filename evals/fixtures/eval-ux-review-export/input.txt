@@ -1,0 +1,19 @@
+UX review evidence log (agent-driven capture, approved plan)
+
+Environment: staging (https://staging.example/reports)
+Viewport captured: 1280x800 only. The 320px narrow pass was planned but not captured; the session expired first.
+Journey J1. Goal: a school administrator exports last month's attendance report as CSV.
+Lens: first-time administrator. Ideal steps: 5.
+
+| Step | Action | Expected | Observed | Evidence | Signals |
+|---|---|---|---|---|---|
+| J1-01 | Open Reports | Reports list with Attendance | Reports list shows Attendance, Behaviour, Usage cards | J1-01.png, J1-01.yml | none |
+| J1-02 | Open Attendance, set date range to last month | Table filters to last month | Table shows 25 rows; first row reads "Asha Verma, Year 9". Applied filters appear as removable chips above the table: "Last month", "All year groups" | J1-02.png, J1-02.yml | none. Screenshot shows student names: flagged for redaction |
+| J1-03 | Look for an export action | A button named Export or Download | No Export button. Overflow menu "..." holds "Process", "Archive", "Delete saved view". Agent opened "Process" by mistake, saw a recalculation dialog, cancelled, reopened the menu | J1-03a.png, J1-03b.png, J1-03.yml | none |
+| J1-04 | Open overflow menu, choose "Archive" (the second option) | Export starts | Item opened an export panel titled "Archive output" with CSV and PDF options. Chose CSV, pressed "Run" | J1-04.png, J1-04.yml | none |
+| J1-05 | Wait for the file | Progress then a download | Page showed no spinner, message, or disabled state for 41 seconds. Agent pressed "Run" a second time at 20 seconds | J1-05a.png, J1-05.yml | POST /api/exports sent twice |
+| J1-06 | Observe result | CSV downloads | Red banner: "ERR_EXPORT_413". No explanation or next action. Second request then completed and a CSV downloaded | J1-06.png, J1-06.yml | POST /api/exports 413 then 200 |
+| J1-07 | (planned) Delete the saved view created by the filters | Saved view removed | Skipped: destructive step, approval not given | none | none |
+
+Totals from the log: 6 actions taken against 5 ideal; 1 backtrack at J1-03; 1 visible error at J1-06; 1 wrong-path click at J1-03.
+Accessibility: the accessibility-review skill has the same evidence; its findings are not attached yet.

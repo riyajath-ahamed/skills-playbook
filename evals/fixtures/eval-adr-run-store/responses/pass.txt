@@ -1,0 +1,42 @@
+---
+title: "ADR-0007: Store run records as JSON files"
+description: "Persist each run as one JSON file in the user's data directory."
+type: adr
+domain: architecture
+status: draft
+id: adr.0007
+tags:
+  - runs
+related:
+  - 0006-run-lifecycle.md
+---
+
+# Status
+
+Proposed.
+
+# Context
+
+- Run state from ADR-0006 lives only in memory and is lost when `ei` exits.
+- `ei` is a single-user command-line tool with no daemon.
+- PostgreSQL waits until a shared multi-user store or a measured retrieval gap exists.
+
+# Decision
+
+The project will store each run as one JSON file in a runs directory under the user's data
+directory. Writes go to a temporary file and are renamed into place. Only transitions that
+ADR-0006 allows are written.
+
+# Consequences
+
+- No new dependency, and a person can inspect a run with a text editor.
+- Cost: two `ei` processes can race on the same run. The first release refuses a second writer
+  with a lock file; merging concurrent writes is not supported.
+- Listing many runs reads many files. That is acceptable at the expected run count.
+- PostgreSQL is deferred until a multi-user store is required. SQLite is not chosen because it
+  adds a driver dependency for no current need.
+
+# Confirmation
+
+- Runs survive a process restart, and illegal transitions are rejected on load.
+- Revisit this decision if two users need the same run history, or if listing runs becomes slow.

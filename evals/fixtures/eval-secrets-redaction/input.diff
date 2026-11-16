@@ -1,0 +1,45 @@
+Pull request: "Production compose file and AWS setup notes"
+
+diff --git a/deploy/docker-compose.prod.yml b/deploy/docker-compose.prod.yml
+new file mode 100644
+index 0000000..a41c2d9
+--- /dev/null
++++ b/deploy/docker-compose.prod.yml
+@@ -0,0 +1,12 @@
++services:
++  billing:
++    image: registry.example/billing:1.4.2
++    environment:
++      DATABASE_URL: postgres://billing_svc:Vq8rT2mZ6pLx4WnK@db.internal.example:5432/billing
++      BILLING_API_TOKEN: ${BILLING_API_TOKEN}
++      LOG_LEVEL: debug
++    ports:
++      - "8080:8080"
++    restart: always
+diff --git a/docs/aws-setup.md b/docs/aws-setup.md
+new file mode 100644
+index 0000000..77b0e13
+--- /dev/null
++++ b/docs/aws-setup.md
+@@ -0,0 +1,9 @@
++# AWS setup
++
++Create `~/.aws/credentials` with your own keys. The values below are the example
++values from the AWS documentation:
++
++    [default]
++    aws_access_key_id = AKIAIOSFODNN7EXAMPLE
++    aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+diff --git a/app/settings.py b/app/settings.py
+index 51d0e2a..c9f13b4 100644
+--- a/app/settings.py
++++ b/app/settings.py
+@@ -1,8 +1,11 @@
++import logging
+ import os
+ 
++log = logging.getLogger(__name__)
++
+ DATABASE_URL = os.environ["DATABASE_URL"]
+ API_TOKEN = os.environ["BILLING_API_TOKEN"]
++log.debug("loaded settings from environment: %s", dict(os.environ))
