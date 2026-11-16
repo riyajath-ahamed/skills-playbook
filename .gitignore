@@ -1,0 +1,33 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.yaml
+
+# Derived indexes and local tool output
+.eit/
+dist/
+coverage.out
+coverage.html
+*.coverprofile
+
+# Build artifacts
+/ei
+/platform/ei
+/platform/bin/
+
+# Editor and OS. .cursor/mcp.json holds absolute local paths; generate it with make mcp-config.
+.DS_Store
+.idea/
+.vscode/
+.cursor/
+
+# Python and Node caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
